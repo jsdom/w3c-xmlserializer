@@ -1,0 +1,18 @@
+{
+  "name": "w3c-xmlserializer",
+  "version": "1.0.0",
+  "main": "lib/XMLSerializer.js",
+  "dependencies": {
+    "domexception": "^1.0.1",
+    "webidl-conversions": "^4.0.2",
+    "xml-name-validator": "^3.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^4.19.1",
+    "prettier": "^1.13.4",
+    "webidl2js": "^9.0.0"
+  },
+  "scripts": {
+    "build": "node scripts/convert-idl.js"
+  }
+}
