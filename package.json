@@ -1,7 +1,6 @@
 {
   "name": "w3c-xmlserializer",
   "version": "1.0.0",
-  "main": "lib/XMLSerializer.js",
   "dependencies": {
     "domexception": "^1.0.1",
     "webidl-conversions": "^4.0.2",
