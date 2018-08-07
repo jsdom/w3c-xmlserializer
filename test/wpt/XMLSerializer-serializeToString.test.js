@@ -44,7 +44,7 @@ describe("WPT", () => {
     );
   });
 
-  test.skip("check XMLSerializer.serializeToString escapes attribute values for roundtripping", function() {
+  test("check XMLSerializer.serializeToString escapes attribute values for roundtripping", function() {
     var serializer = new XMLSerializer();
     var parser = new DOMParser();
     var root = parser.parseFromString("<root />", "text/xml").documentElement;
