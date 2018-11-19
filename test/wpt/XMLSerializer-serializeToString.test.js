@@ -64,4 +64,13 @@ describe("WPT", () => {
       serializer.serializeToString(root)
     );
   });
+
+  test("check CDATASection nodes are serialized correctly", () => {
+    const markup =
+      "<xhtml><style><![CDATA[ a > b { color: red; } ]]></style></xhtml>";
+
+    const document = new DOMParser().parseFromString(markup, "application/xml");
+
+    expect(new XMLSerializer().serializeToString(document)).toEqual(markup);
+  });
 });
