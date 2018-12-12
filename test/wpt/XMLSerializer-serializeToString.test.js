@@ -65,6 +65,19 @@ describe("WPT", () => {
     );
   });
 
+  test("Check if unknown prefixes are handled correctly", function() {
+    const document = createXmlDoc();
+    const root = document.documentElement;
+    const element = root.ownerDocument.createElementNS(
+      "http://www.w3.org/1999/xhtml",
+      "html:br"
+    );
+    root.appendChild(element);
+    expect(serializer.serializeToString(root, true)).toEqual(
+      '<root><child1>value1</child1><html:br xmlns:html="http://www.w3.org/1999/xhtml" /></root>'
+    );
+  });
+
   test("check CDATASection nodes are serialized correctly", () => {
     const markup =
       "<xhtml><style><![CDATA[ a > b { color: red; } ]]></style></xhtml>";
