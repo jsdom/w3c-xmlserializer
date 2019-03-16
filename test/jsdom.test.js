@@ -1,14 +1,19 @@
 const { JSDOM } = require("jsdom");
 
 const XMLSerializer = require("../lib/XMLSerializer").interface;
+const { produceXMLSerialization } = require("../lib/serialization");
 
 function serialize(node) {
   var serializer = new XMLSerializer();
   return serializer.serializeToString(node);
 }
 
+function wellFormedSerialize(node) {
+  return produceXMLSerialization(node, true);
+}
+
 describe("JSDOM imports", () => {
-  test("Serializes custom prefixes", function() {
+  test("Serializes custom prefixes", () => {
     const {
       window: { document }
     } = new JSDOM(
@@ -25,5 +30,19 @@ describe("JSDOM imports", () => {
     expect(serialize(els[0])).toEqual(
       `<element xmlns:prefix="https://example.com/" prefix:hasOwnProperty="value"/>`
     );
+  });
+
+  test("Serializes tab characters", () => {
+    const {
+      window: { document }
+    } = new JSDOM(
+      `<dummy />`,
+      { contentType: "text/xml" }
+    );
+
+    const el = document.createElement("el");
+    el.appendChild(document.createTextNode("\t"));
+
+    expect(wellFormedSerialize(el)).toEqual("<el>\t</el>");
   });
 });
