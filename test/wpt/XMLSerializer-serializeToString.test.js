@@ -77,4 +77,13 @@ describe("WPT", () => {
       '<root><child1>value1</child1><html:br xmlns:html="http://www.w3.org/1999/xhtml" /></root>'
     );
   });
+
+  test("check CDATASection nodes are serialized correctly", () => {
+    const markup =
+      "<xhtml><style><![CDATA[ a > b { color: red; } ]]></style></xhtml>";
+
+    const document = new DOMParser().parseFromString(markup, "application/xml");
+
+    expect(new XMLSerializer().serializeToString(document)).toEqual(markup);
+  });
 });
