@@ -78,12 +78,23 @@ describe("WPT", () => {
     );
   });
 
-  test("check CDATASection nodes are serialized correctly", () => {
+  test("Check CDATASection nodes are serialized correctly", () => {
     const markup =
       "<xhtml><style><![CDATA[ a > b { color: red; } ]]></style></xhtml>";
 
     const document = new DOMParser().parseFromString(markup, "application/xml");
 
-    expect(new XMLSerializer().serializeToString(document)).toEqual(markup);
+    expect(serializer.serializeToString(document)).toEqual(markup);
+  });
+
+  test("Check prefix memoization (GH-5)", () => {
+    const document = createXmlDoc();
+    const root = document.documentElement;
+    root.setAttributeNS("https://example.com/", "attribute1", "value");
+    root.setAttributeNS("https://example.com/", "attribute2", "value");
+
+    expect (serializer.serializeToString(document)).toEqual(
+      '<root xmlns:ns1="https://example.com/" ns1:attribute1="value" ns1:attribute2="value"><child1>value1</child1></root>'
+    );
   });
 });
