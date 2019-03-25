@@ -24,6 +24,7 @@
   "files": [
     "lib/"
   ],
+  "main": "lib/index.js",
   "scripts": {
     "prepare": "node scripts/convert-idl.js",
     "pretest": "node scripts/convert-idl.js",
