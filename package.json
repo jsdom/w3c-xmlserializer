@@ -25,8 +25,8 @@
     "lib/"
   ],
   "scripts": {
-    "build": "node scripts/convert-idl.js",
-    "prepublish": "node scripts/convert-idl.js",
+    "prepare": "node scripts/convert-idl.js",
+    "pretest": "node scripts/convert-idl.js",
     "test": "jest",
     "lint": "eslint ."
   }
