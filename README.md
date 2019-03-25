@@ -1,18 +1,20 @@
-# W3C-XMLSERIALIZER
+# w3c-xmlserializer
 
-A javascript XML serializer that follows the [w3c specifications](https://www.w3.org/TR/DOM-Parsing/#dfn-concept-serialize-xml).
+An XML serializer that follows the [W3C specification](https://w3c.github.io/DOM-Parsing/).
+
+This module is mostly used as an internal part of [jsdom](https://github.com/jsdom/jsdom). However, you can use it independently with some care. That isn't very well-documented yet, but hopefully the below sample can give you an idea.
 
 ## Basic usage
 
-```javascript
-import {XMLSerializer} from "w3c-xmlserializer";
+```js
+import { XMLSerializer } from "w3c-xmlserializer";
 import { JSDOM } from "jsdom";
 
-const document = new JSDOM().window.document;
-const SerializerInterface = XMLSerializer.interface;
-const serializer = new SerializerInterface();
+const { document } = new JSDOM().window;
+const XMLSerializer = XMLSerializer.interface;
+const serializer = new XMLSerializer();
 const doc = document.createElement("akomaNtoso");
 
-console.log(serializer.serializeToString(doc))
-// <akomantoso xmlns="http://www.w3.org/1999/xhtml"></akomantoso>
+console.log(serializer.serializeToString(doc));
+// => '<akomantoso xmlns="http://www.w3.org/1999/xhtml"></akomantoso>'
 ```
