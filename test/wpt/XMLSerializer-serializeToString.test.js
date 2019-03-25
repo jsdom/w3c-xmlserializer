@@ -93,7 +93,7 @@ describe("WPT", () => {
     root.setAttributeNS("https://example.com/", "attribute1", "value");
     root.setAttributeNS("https://example.com/", "attribute2", "value");
 
-    expect (serializer.serializeToString(document)).toEqual(
+    expect(serializer.serializeToString(document)).toEqual(
       '<root xmlns:ns1="https://example.com/" ns1:attribute1="value" ns1:attribute2="value"><child1>value1</child1></root>'
     );
   });
