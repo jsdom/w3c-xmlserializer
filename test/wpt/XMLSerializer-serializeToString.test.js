@@ -1,10 +1,11 @@
+"use strict";
 const { JSDOM } = require("jsdom");
 
 const XMLSerializer = require("../../lib/XMLSerializer").interface;
 
 describe("WPT", () => {
   const serializer = new XMLSerializer();
-  const DOMParser = new JSDOM().window.DOMParser;
+  const { DOMParser } = (new JSDOM()).window;
 
   function createXmlDoc() {
     const input =
@@ -13,27 +14,27 @@ describe("WPT", () => {
     return parser.parseFromString(input, "text/xml");
   }
 
-  test("check XMLSerializer.serializeToString method could parsing xmldoc to string", async () => {
+  test("check XMLSerializer.serializeToString method could parsing xmldoc to string", () => {
     const document = createXmlDoc();
     expect(serializer.serializeToString(document)).toEqual(
       "<root><child1>value1</child1></root>"
     );
   });
 
-  test("Check if the default namespace is correctly reset.", async () => {
+  test("Check if the default namespace is correctly reset.", () => {
     const document = createXmlDoc();
-    var root = document.documentElement;
-    var element = root.ownerDocument.createElementNS("urn:foo", "another");
-    var child1 = root.firstChild;
+    const root = document.documentElement;
+    const element = root.ownerDocument.createElementNS("urn:foo", "another");
+    const child1 = root.firstChild;
     root.replaceChild(element, child1);
     element.appendChild(child1);
-    var xmlString = serializer.serializeToString(root);
+    const xmlString = serializer.serializeToString(root);
     expect(xmlString).toEqual(
       '<root><another xmlns="urn:foo"><child1 xmlns="">value1</child1></another></root>'
     );
   });
 
-  test("Check if there is no redundant empty namespace declaration.", async () => {
+  test("Check if there is no redundant empty namespace declaration.", () => {
     const input =
       '<root xmlns="urn:bar"><outer xmlns=""><inner>value1</inner></outer></root>';
     const root = new DOMParser().parseFromString(input, "text/xml")
@@ -44,28 +45,21 @@ describe("WPT", () => {
     );
   });
 
-  test("check XMLSerializer.serializeToString escapes attribute values for roundtripping", function() {
-    var serializer = new XMLSerializer();
-    var parser = new DOMParser();
-    var root = parser.parseFromString("<root />", "text/xml").documentElement;
+  test("check XMLSerializer.serializeToString escapes attribute values for roundtripping", () => {
+    const parser = new DOMParser();
+    const root = parser.parseFromString("<root />", "text/xml").documentElement;
 
     root.setAttribute("attr", "\t");
-    expect(['<root attr="&#9;"/>', '<root attr="&#x9;"/>']).toContain(
-      serializer.serializeToString(root)
-    );
+    expect(['<root attr="&#9;"/>', '<root attr="&#x9;"/>']).toContain(serializer.serializeToString(root));
 
     root.setAttribute("attr", "\n");
-    expect(['<root attr="&#xA;"/>', '<root attr="&#10;"/>']).toContain(
-      serializer.serializeToString(root)
-    );
+    expect(['<root attr="&#xA;"/>', '<root attr="&#10;"/>']).toContain(serializer.serializeToString(root));
 
     root.setAttribute("attr", "\r");
-    expect(['<root attr="&#xD;"/>', '<root attr="&#13;"/>']).toContain(
-      serializer.serializeToString(root)
-    );
+    expect(['<root attr="&#xD;"/>', '<root attr="&#13;"/>']).toContain(serializer.serializeToString(root));
   });
 
-  test("Check if unknown prefixes are handled correctly", function() {
+  test("Check if unknown prefixes are handled correctly", () => {
     const document = createXmlDoc();
     const root = document.documentElement;
     const element = root.ownerDocument.createElementNS(
