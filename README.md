@@ -7,8 +7,8 @@ This module is mostly used as an internal part of [jsdom](https://github.com/jsd
 ## Basic usage
 
 ```js
-import { XMLSerializer } from "w3c-xmlserializer";
-import { JSDOM } from "jsdom";
+const { XMLSerializer } = require("w3c-xmlserializer");
+const { JSDOM } = require("jsdom");
 
 const { document } = new JSDOM().window;
 const XMLSerializer = XMLSerializer.interface;
