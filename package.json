@@ -22,6 +22,7 @@
   },
   "repository": "jsdom/w3c-xmlserializer",
   "files": [
+    "LICENSE",
     "lib/"
   ],
   "main": "lib/index.js",
