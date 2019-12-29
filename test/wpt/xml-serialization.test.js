@@ -1,7 +1,7 @@
 "use strict";
 const { JSDOM } = require("jsdom");
 
-const XMLSerializer = require("../..").XMLSerializer.interface;
+const XMLSerializer = require("../..");
 
 function serialize(node) {
   const serializer = new XMLSerializer();

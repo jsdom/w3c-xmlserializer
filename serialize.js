@@ -3,8 +3,8 @@
 const DOMException = require("domexception");
 const xnv = require("xml-name-validator");
 
-const attributeUtils = require("./attributes");
-const { NAMESPACES, VOID_ELEMENTS, NODE_TYPES } = require("./constants");
+const attributeUtils = require("./lib/attributes.js");
+const { NAMESPACES, VOID_ELEMENTS, NODE_TYPES } = require("./lib/constants.js");
 
 const XML_CHAR = /^(\x09|\x0A|\x0D|[\x20-\uD7FF]|[\uE000-\uFFFD]|(?:[\uD800-\uDBFF][\uDC00-\uDFFF]))*$/;
 const PUBID_CHAR = /^(\x20|\x0D|\x0A|[a-zA-Z0-9]|[-'()+,./:=?;!*#@$_%])*$/;
@@ -363,7 +363,7 @@ function xmlSerialization(node, namespace, prefixMap, requireWellFormed, refs) {
   }
 }
 
-module.exports.produceXMLSerialization = (root, requireWellFormed) => {
+module.exports = (root, { requireWellFormed = false, exceptionConstructor = DOMException } = {}) => {
   const namespacePrefixMap = Object.create(null);
   namespacePrefixMap["http://www.w3.org/XML/1998/namespace"] = ["xml"];
   try {
@@ -371,7 +371,8 @@ module.exports.produceXMLSerialization = (root, requireWellFormed) => {
       prefixIndex: 1
     });
   } catch (e) {
-    throw new DOMException(
+    // eslint-disable-next-line new-cap
+    throw new exceptionConstructor(
       "Failed to serialize XML: " + e.message,
       "InvalidStateError"
     );

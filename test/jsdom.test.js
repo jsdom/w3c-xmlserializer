@@ -1,16 +1,12 @@
 "use strict";
 const { JSDOM } = require("jsdom");
 
-const XMLSerializer = require("..").XMLSerializer.interface;
-const { produceXMLSerialization } = require("..");
+const XMLSerializer = require("..");
+const serialize = require("../serialize");
 
-function serialize(node) {
+function serializeUsingSerializer(node) {
   const serializer = new XMLSerializer();
   return serializer.serializeToString(node);
-}
-
-function wellFormedSerialize(node) {
-  return produceXMLSerialization(node, true);
 }
 
 describe("JSDOM imports", () => {
@@ -28,7 +24,7 @@ describe("JSDOM imports", () => {
     expect(els[0].attributes).toHaveLength(2);
     expect(els[0].attributes[1].prefix).toEqual("prefix");
     expect(els[0].getAttribute("prefix:hasOwnProperty")).toEqual("value");
-    expect(serialize(els[0])).toEqual(
+    expect(serializeUsingSerializer(els[0])).toEqual(
       `<element xmlns:prefix="https://example.com/" prefix:hasOwnProperty="value"/>`
     );
   });
@@ -44,6 +40,6 @@ describe("JSDOM imports", () => {
     const el = document.createElement("el");
     el.appendChild(document.createTextNode("\t"));
 
-    expect(wellFormedSerialize(el)).toEqual("<el>\t</el>");
+    expect(serialize(el, { requireWellFormed: true })).toEqual("<el>\t</el>");
   });
 });
