@@ -2,10 +2,10 @@
   "root": true,
   "env": {
     "node": true,
-    "es6": true
+    "es2017": true
   },
   "parserOptions": {
-    "ecmaVersion": 6
+    "ecmaVersion": 2018
   },
   "rules": {
     // Possible errors
@@ -25,7 +25,7 @@
     "no-empty-character-class": "error",
     "no-ex-assign": "error",
     "no-extra-boolean-cast": "error",
-    "no-extra-parens": ["error", "all", { "conditionalAssign": false, "nestedBinaryExpressions": false, "returnAssign": false }],
+    "no-extra-parens": ["error", "all", { "conditionalAssign": false, "nestedBinaryExpressions": false, "returnAssign": false, "enforceForNewInMemberExpressions": false }],
     "no-extra-semi": "error",
     "no-func-assign": "error",
     "no-inner-declarations": "off",
