@@ -3,8 +3,8 @@
 const DOMException = require("domexception");
 const xnv = require("xml-name-validator");
 
-const attributeUtils = require("./lib/attributes.js");
-const { NAMESPACES, VOID_ELEMENTS, NODE_TYPES } = require("./lib/constants.js");
+const attributeUtils = require("./lib/attributes");
+const { NAMESPACES, VOID_ELEMENTS, NODE_TYPES } = require("./lib/constants");
 
 const XML_CHAR = /^(\x09|\x0A|\x0D|[\x20-\uD7FF]|[\uE000-\uFFFD]|(?:[\uD800-\uDBFF][\uDC00-\uDFFF]))*$/;
 const PUBID_CHAR = /^(\x20|\x0D|\x0A|[a-zA-Z0-9]|[-'()+,./:=?;!*#@$_%])*$/;

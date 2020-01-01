@@ -1,6 +1,6 @@
 "use strict";
 
-const XMLSerializer = require("./webidl2js-wrapper.js");
+const XMLSerializer = require("./webidl2js-wrapper");
 const DOMException = require("domexception");
 
 const sharedGlobalObject = { DOMException };
