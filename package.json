@@ -7,7 +7,7 @@
     "xml",
     "xmlserializer"
   ],
-  "version": "1.1.2",
+  "version": "2.0.0",
   "license": "MIT",
   "dependencies": {
     "xml-name-validator": "^3.0.0"
