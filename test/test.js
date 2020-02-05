@@ -1,6 +1,7 @@
 "use strict";
 const { JSDOM } = require("jsdom");
 const serialize = require("..");
+const utils = require("jsdom/lib/jsdom/living/generated/utils.js");
 
 describe("Derived from WPT xml-serialization.xhtml", () => {
   const { document } = (new JSDOM()).window;
@@ -207,5 +208,23 @@ describe("Our own test cases", () => {
     el.appendChild(document.createTextNode("\t"));
 
     expect(serialize(el, { requireWellFormed: true })).toEqual("<el>\t</el>");
+  });
+
+  test("xmlns attribute shouldn't be printed twice", () => {
+    const document = createXMLDoc(`<element xmlns="http://www.w3.org/1999/xhtml"></element>`);
+
+    const els = document.getElementsByTagName("element");
+
+    const impl = utils.implSymbol;
+    const attr = els[0].attributes[0];
+
+    // Firefox and Chrome does not set namespaceURI on the xmlns attr. The following line forces JsDOM to do the same.
+    attr[impl]._namespace = null;
+
+    expect(els).toHaveLength(1);
+    expect(els[0].attributes).toHaveLength(1);
+    expect(serialize(els[0])).toEqual(
+      `<element xmlns="http://www.w3.org/1999/xhtml"></element>`
+    );
   });
 });
