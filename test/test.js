@@ -152,7 +152,7 @@ describe("Derived from WPT XMLSerializer-serializeToString.html", () => {
       "html:br"
     );
     root.appendChild(element);
-    expect(serialize(root, true)).toEqual(
+    expect(serialize(root, { requireWellFormed: true })).toEqual(
       '<root><child1>value1</child1><html:br xmlns:html="http://www.w3.org/1999/xhtml" /></root>'
     );
   });
