@@ -10,12 +10,12 @@
   "version": "2.0.0",
   "license": "MIT",
   "dependencies": {
-    "xml-name-validator": "^3.0.0"
+    "xml-name-validator": "^4.0.0"
   },
   "devDependencies": {
-    "eslint": "^6.8.0",
-    "jest": "^24.9.0",
-    "jsdom": "^15.2.1"
+    "eslint": "^7.32.0",
+    "jest": "^27.2.0",
+    "jsdom": "^17.0.0"
   },
   "repository": "jsdom/w3c-xmlserializer",
   "files": [
@@ -27,6 +27,6 @@
     "lint": "eslint ."
   },
   "engines": {
-    "node": ">=10"
+    "node": ">=12"
   }
 }
