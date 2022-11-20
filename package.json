@@ -13,10 +13,10 @@
     "xml-name-validator": "^4.0.0"
   },
   "devDependencies": {
-    "@domenic/eslint-config": "^1.4.0",
-    "eslint": "^7.32.0",
-    "jest": "^27.2.0",
-    "jsdom": "^17.0.0"
+    "@domenic/eslint-config": "^3.0.0",
+    "eslint": "^8.28.0",
+    "jest": "^29.3.1",
+    "jsdom": "^20.0.2"
   },
   "repository": "jsdom/w3c-xmlserializer",
   "files": [
