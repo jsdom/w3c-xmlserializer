@@ -167,6 +167,37 @@ describe("Derived from WPT XMLSerializer-serializeToString.html", () => {
   });
 });
 
+describe("Well-formedness test cases", () => {
+  const { DOMParser } = (new JSDOM()).window;
+  const parser = new DOMParser();
+  const document = parser.parseFromString("<dummy />", "text/xml");
+
+  // Derived from https://www.w3.org/TR/xml/#NT-Char
+  test("Check Characters are in range", () => {
+    expect(() => {
+      const emojiNode = document.createTextNode("Emoji 🔍");
+      serialize(emojiNode, { requireWellFormed: true });
+    }).not.toThrow();
+
+    const expectedError = new Error("Failed to serialize XML: text node data is not well-formed.");
+
+    expect(() => {
+      const surrogateBlockNode = document.createTextNode("Surrogate block \uD800");
+      serialize(surrogateBlockNode, { requireWellFormed: true });
+    }).toThrow(expectedError);
+
+    expect(() => {
+      const fffeNode = document.createTextNode("FFFE \uFFFE");
+      serialize(fffeNode, { requireWellFormed: true });
+    }).toThrow(expectedError);
+
+    expect(() => {
+      const ffffNode = document.createTextNode("FFFF \uFFFF");
+      serialize(ffffNode, { requireWellFormed: true });
+    }).toThrow(expectedError);
+  });
+});
+
 describe("Our own test cases", () => {
   const { DOMParser } = (new JSDOM()).window;
 
