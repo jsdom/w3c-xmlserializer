@@ -180,6 +180,90 @@ describe("Well-formedness test cases", () => {
   const parser = new DOMParser();
   const document = parser.parseFromString("<dummy />", "text/xml");
 
+  test("Rejects invalid XML characters in attribute values only when well-formedness is required", () => {
+    const element = document.createElementNS(null, "root");
+    const invalidValues = [
+      "\u0000",
+      "\u0001",
+      "\u0008",
+      "\u000B",
+      "\u000C",
+      "\u000E",
+      "\u001F",
+      "\uD800",
+      "\uDC00",
+      "\uFFFE",
+      "\uFFFF",
+      "before\u0000after"
+    ];
+
+    for (const value of invalidValues) {
+      element.setAttribute("value", value);
+      assert.throws(
+        () => serialize(element, { requireWellFormed: true }),
+        new Error("Failed to serialize XML: attribute value is not well-formed."),
+        JSON.stringify(value)
+      );
+      assert.equal(serialize(element), `<root value="${value}"/>`);
+    }
+  });
+
+  test("Accepts empty attribute values and XML character boundaries", () => {
+    const element = document.createElementNS(null, "root");
+    for (const value of ["", " ", "\uD7FF", "\uE000", "\uFFFD", "\u{10000}", "\u{1F600}", "\u{10FFFF}"]) {
+      element.setAttribute("value", value);
+      assert.equal(serialize(element, { requireWellFormed: true }), `<root value="${value}"/>`);
+    }
+  });
+
+  test("Escapes valid attribute values when well-formedness is required", () => {
+    const element = document.createElementNS(null, "root");
+    element.setAttribute("value", "\t\n\r text \u{1F600} &\"<>");
+    assert.equal(
+      serialize(element, { requireWellFormed: true }),
+      '<root value="&#x9;&#xA;&#xD; text \u{1F600} &amp;&quot;&lt;&gt;"/>'
+    );
+  });
+
+  test("Validates generated namespace declaration values", () => {
+    const element = document.createElementNS("urn:\u0000", "root");
+    assert.throws(
+      () => serialize(element, { requireWellFormed: true }),
+      new Error("Failed to serialize XML: attribute value is not well-formed.")
+    );
+    assert.equal(serialize(element), '<root xmlns="urn:\u0000"/>');
+
+    const withAttribute = document.createElementNS(null, "root");
+    withAttribute.setAttributeNS("urn:\u0000", "value", "text");
+    assert.throws(
+      () => serialize(withAttribute, { requireWellFormed: true }),
+      new Error("Failed to serialize XML: attribute value is not well-formed.")
+    );
+    assert.equal(serialize(withAttribute), '<root xmlns:ns1="urn:\u0000" ns1:value="text"/>');
+  });
+
+  test("Validates large XML character strings without overflowing the stack", () => {
+    const value = "a".repeat(5_000_000);
+    const element = document.createElementNS(null, "root");
+    element.setAttribute("value", value);
+    const cases = [
+      [element, `<root value="${value}"/>`],
+      [document.createTextNode(value), value],
+      [document.createComment(value), `<!--${value}-->`],
+      [document.createProcessingInstruction("target", value), `<?target ${value}?>`],
+      [document.implementation.createDocumentType("root", "", value), `<!DOCTYPE root SYSTEM "${value}">`]
+    ];
+    for (const [node, expected] of cases) {
+      assert.equal(serialize(node, { requireWellFormed: true }), expected);
+    }
+
+    element.setAttribute("value", `${value}\u0000`);
+    assert.throws(
+      () => serialize(element, { requireWellFormed: true }),
+      new Error("Failed to serialize XML: attribute value is not well-formed.")
+    );
+  });
+
   // Derived from https://www.w3.org/TR/xml/#NT-Char
   test("Check Characters are in range", () => {
     // Test this does not throw:
@@ -212,6 +296,81 @@ describe("Our own test cases", () => {
     const parser = new DOMParser();
     return parser.parseFromString(input, "text/xml");
   }
+
+  test("Serializes namespaces named after Object prototype properties", () => {
+    const document = createXMLDoc("<root/>");
+    for (const namespace of ["constructor", "toString", "__proto__"]) {
+      const root = document.createElementNS(namespace, "root");
+      root.appendChild(document.createElementNS(namespace, "child"));
+      for (const requireWellFormed of [false, true]) {
+        assert.equal(
+          serialize(root, { requireWellFormed }),
+          `<root xmlns="${namespace}"><child/></root>`
+        );
+      }
+
+      const withAttribute = document.createElementNS(null, "root");
+      withAttribute.setAttributeNS(namespace, "value", "text");
+      assert.equal(
+        serialize(withAttribute, { requireWellFormed: true }),
+        `<root xmlns:ns1="${namespace}" ns1:value="text"/>`
+      );
+
+      const withDeclaration = createXMLDoc(`<root xmlns:p="${namespace}"><p:child/></root>`);
+      assert.equal(
+        serialize(withDeclaration, { requireWellFormed: true }),
+        `<root xmlns:p="${namespace}"><p:child/></root>`
+      );
+    }
+  });
+
+  test("Distinguishes the null namespace from a namespace named null", () => {
+    const document = createXMLDoc("<root/>");
+    const root = document.documentElement;
+    root.setAttribute("value", "one");
+    root.setAttributeNS("null", "value", "two");
+    assert.equal(
+      serialize(root, { requireWellFormed: true }),
+      '<root value="one" xmlns:ns1="null" ns1:value="two"/>'
+    );
+  });
+
+  test("Does not reuse a namespace named null for unnamespaced elements", () => {
+    const document = createXMLDoc('<root xmlns="urn:parent" xmlns:p="null"/>');
+    const root = document.documentElement;
+    root.appendChild(document.createElementNS(null, "child"));
+    assert.equal(
+      serialize(root, { requireWellFormed: true }),
+      '<root xmlns="urn:parent" xmlns:p="null"><child xmlns=""/></root>'
+    );
+  });
+
+  test("Handles empty prefix declarations in permissive mode", () => {
+    const document = createXMLDoc("<root><child/></root>");
+    const root = document.documentElement;
+    root.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:p", "");
+    root.firstChild.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:p", "");
+    assert.equal(serialize(root), '<root xmlns:p=""><child/></root>');
+    assert.throws(
+      () => serialize(root, { requireWellFormed: true }),
+      new Error("Namespace prefix declarations cannot be used to undeclare a namespace")
+    );
+  });
+
+  test("Keeps child namespace declarations out of sibling prefix lists", () => {
+    const document = createXMLDoc('<root xmlns:p="urn:test"><first xmlns:q="urn:test"/></root>');
+    const root = document.documentElement;
+    const second = document.createElementNS("urn:test", "second");
+    second.setAttributeNS("urn:test", "value", "text");
+    root.appendChild(second);
+
+    for (const requireWellFormed of [false, true]) {
+      assert.equal(
+        serialize(root, { requireWellFormed }),
+        '<root xmlns:p="urn:test"><first xmlns:q="urn:test"/><p:second p:value="text"/></root>'
+      );
+    }
+  });
 
   test("Check prefix memoization (GH-5)", () => {
     const document = createXMLDoc('<?xml version="1.0" encoding="UTF-8"?><root><child1>value1</child1></root>');
