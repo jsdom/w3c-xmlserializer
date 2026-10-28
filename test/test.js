@@ -55,8 +55,7 @@ describe("Derived from WPT xml-serialization.xhtml", () => {
     const el = document.createElement("a");
     el.setAttribute(
       "href",
-      "\u3042\u3044\u3046 !\"#$%&'()*+,-./0123456789:;<=>?@A" +
-        "BCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~",
+      "\u3042\u3044\u3046 !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~",
     );
     assert.equal(
       serialize(el),
@@ -67,8 +66,7 @@ describe("Derived from WPT xml-serialization.xhtml", () => {
     const el = document.createElement("a");
     el.setAttribute(
       "href",
-      "?\u3042\u3044\u3046 !\"$%&'()*+,-./0123456789:;<=>?@" +
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~",
+      "?\u3042\u3044\u3046 !\"$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~",
     );
     assert.equal(
       serialize(el),
