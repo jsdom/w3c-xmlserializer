@@ -17,7 +17,6 @@ const node = document.createElement("akomaNtoso");
 
 Then, you use this package as follows:
 
-
 ```js
 const serialize = require("w3c-xmlserializer");
 
@@ -37,5 +36,5 @@ which will cause `Error`s to be thrown when non-well-formed constructs are encou
 
 As a point of reference, on the web platform:
 
-* The [`innerHTML` getter](https://w3c.github.io/DOM-Parsing/#dom-innerhtml-innerhtml) uses the require-well-formed mode, i.e. trying to get the `innerHTML` of non-well-formed subtrees will throw.
-* The [`xhr.send()` method](https://xhr.spec.whatwg.org/#the-send()-method) does not require well-formedness, i.e. sending non-well-formed `Document`s will serialize and send them anyway.
+- The [`innerHTML` getter](https://w3c.github.io/DOM-Parsing/#dom-innerhtml-innerhtml) uses the require-well-formed mode, i.e. trying to get the `innerHTML` of non-well-formed subtrees will throw.
+- The [`xhr.send()` method](<https://xhr.spec.whatwg.org/#the-send()-method>) does not require well-formedness, i.e. sending non-well-formed `Document`s will serialize and send them anyway.
