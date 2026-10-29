@@ -1,8 +1,10 @@
 import domenicConfig from "@domenic/eslint-config";
-import stylisticConfig from "@domenic/eslint-config/stylistic";
+import domenicStylisticConfig from "@domenic/eslint-config/stylistic";
 import globals from "globals";
 
 export default [
+  ...domenicConfig,
+  ...domenicStylisticConfig,
   {
     files: ["**/*.js"],
     languageOptions: {
@@ -10,6 +12,10 @@ export default [
       globals: globals.node,
     },
   },
-  ...domenicConfig,
-  ...stylisticConfig,
+  {
+    files: ["**/*.mjs"],
+    languageOptions: {
+      globals: globals.nodeBuiltin,
+    },
+  },
 ];
